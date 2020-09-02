@@ -53,7 +53,7 @@ else{                                   \
     retSize = size;                     \
 }                                       \
 retSize;                                \
-})        
+})      
 
 #define getBinaryFileSize(binFILE) ({               \
 unsigned int binStart = ftell(binFILE);             \
@@ -61,6 +61,32 @@ fseek(binFILE, 0, SEEK_END);                        \
 unsigned int binSize = ftell(binFILE) - binStart;   \
 fseek(binFILE, 0, SEEK_SET);                        \
 binSize;                                            \
+})
+
+#define nextIp(instance)({          \
+    instance->regs.ip++;            \
+})
+
+#define setCarryFlag(instance)({                \
+    instance->regs.eflag |= 0x1;                \
+})
+
+#define setOverflowFlag(instance)({             \
+    instance->regs.eflag |= 0x2;                \
+})
+
+#define setZeroFlag(instance)({                 \
+    instance->regs.eflag |= 0x4;                \
+})
+
+#define checkStackOverflow(instance)({                              \
+    int result = (instance->regs.sp) <= instance->mem.stackSize?0:1;\
+    result;                                                         \
+})
+
+#define checkHeapOverflow(instance, offset)({                       \
+    int result = (offset) <= instance->mem.heapSize?0:1;            \
+    result;                                                         \
 })
 
 struct REGs{
@@ -73,7 +99,7 @@ struct REGs{
 struct STATUS{
     uint8_t running;
     unsigned int io;
-    unsigned error;
+    int error;
 };
 
 struct MEM{
