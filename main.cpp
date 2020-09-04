@@ -21,7 +21,7 @@ int main(int argc, char *argv[]){
     unsigned int initStackSize = atoi(argv[2]);
     unsigned int initHeapSize = atoi(argv[3]);
     if(!evmLoadBinaryFile(binaryFileName,initStackSize,initHeapSize)){
-        std::cerr<<"[-] Fail to load your binary file!"<<std::endl;
+        std::cerr<<"[-] Runtime ERROR!"<<std::endl;
         exit(0);
     }
     else{

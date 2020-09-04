@@ -7,15 +7,15 @@
 #define isub 0x21u
 #define imul 0x22u
 #define idiv 0x23u
-#define cmp 0x24u
+#define icmp 0x24u
 
 //位运算指令
-#define and 0x30u
-#define or 0x31u
-#define xor 0x32u
-#define not 0x33u
-#define shl 0x34u
-#define shr 0x35
+#define iand 0x30u
+#define ior 0x31u
+#define ixor 0x32u
+#define inot 0x33u
+#define ishl 0x34u
+#define ishr 0x35
 
 //栈操作
 #define push 0x40u//立即值

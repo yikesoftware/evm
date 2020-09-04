@@ -17,8 +17,8 @@ const char statusToText[5][128] = {
     "[-] ERROR 00: EVM instance memory allocation failed!",
     "[-] ERROR 01: The binary file size exceeds the upper limit!",
     "[-] ERROR 02: Unable to read binary file!",
-    "[-] ERROR 03: ",
-    "[-] ERROR 04: "
+    "[-] ERROR 03: Unknown instruction: ",
+    "[-] ERROR 04: Stack smash detected!"
 };
 
 #define getErrorText(code) ({           \
@@ -79,14 +79,35 @@ binSize;                                            \
     instance->regs.eflag |= 0x4;                \
 })
 
-#define checkStackOverflow(instance)({                              \
+#define checkStackUnderflow(instance)({                             \
     int result = (instance->regs.sp) <= instance->mem.stackSize?0:1;\
     result;                                                         \
+})
+
+#define checkStackOverflow(instance)({                  \
+    int result = (instance->regs.sp)<0?1:0;             \
+    result;                                             \
 })
 
 #define checkHeapOverflow(instance, offset)({                       \
     int result = (offset) <= instance->mem.heapSize?0:1;            \
     result;                                                         \
+})
+
+#define checkHeapUnderflow(instance, offset)({          \
+    int result = (offset)<0?1:0;                        \
+    result;                                             \
+})
+
+#define fetchNext(instance,ip)({                                        \
+    uint8_t nextInstruction;                                            \
+    if(ip>instance->mem.binarySize){                                    \
+        std::cerr<<"[-] Out of memory!"<<std::endl;                     \
+        return 0;                                                       \
+    }                                                                   \
+    nextInstruction = *(uint8_t *)((instance->mem.binaryMem)+ip);       \
+    ip++;                                                               \
+    nextInstruction;                                                    \
 })
 
 struct REGs{
@@ -103,6 +124,7 @@ struct STATUS{
 };
 
 struct MEM{
+    unsigned int binarySize;
     uint8_t *binaryMem;
     unsigned int stackSize;
     uint8_t* stack;
@@ -135,6 +157,7 @@ class EVM{
             if(binaryFileSize>BINARY_MAX_SIZE){
                 status.error = 1; //二进制文件过大
             }
+            mem.binarySize = binaryFileSize-1;
             mem.binaryMem = (uint8_t *)malloc(binaryFileSize+1);
             if(!mem.binaryMem){
                 status.error = 0; //无法分配内存
