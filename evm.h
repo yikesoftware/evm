@@ -80,7 +80,7 @@ binSize;                                            \
 })
 
 #define checkStackUnderflow(instance)({                             \
-    int result = (instance->regs.sp) <= instance->mem.stackSize?0:1;\
+    int result = (instance->regs.sp) < instance->mem.stackSize?0:1; \
     result;                                                         \
 })
 
@@ -90,7 +90,7 @@ binSize;                                            \
 })
 
 #define checkHeapOverflow(instance, offset)({                       \
-    int result = (offset) <= instance->mem.heapSize?0:1;            \
+    int result = (offset) < instance->mem.heapSize?0:1;             \
     result;                                                         \
 })
 
@@ -144,6 +144,7 @@ class EVM{
             status.error = -1;
             mem.stackSize = getStackSize(stackSize); //获取正确的内存大小
             mem.heapSize = getHeapSize(heapSize);
+            regs.sp = mem.stackSize - 1;
             mem.stack = (uint8_t *)malloc(mem.stackSize);
             mem.heap = (uint8_t *)malloc(mem.heapSize);
             if(!mem.stack || !mem.heap){

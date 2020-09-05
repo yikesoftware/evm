@@ -34,13 +34,13 @@ int runEvmInstance(EVM *evmInstance){
         x^=x;y^=y;
         switch(nI){
             case iadd:
-                evmInstance->regs.sp -= 1;
+                evmInstance->regs.sp += 1;
                 if(checkStackOverflow(evmInstance) || checkStackUnderflow(evmInstance)){
                     evmInstance->status.error = 4;
                     return abortWithError(evmInstance);
                 }
                 x = *(stackBase+evmInstance->regs.sp);
-                y = *(stackBase+evmInstance->regs.sp+1);
+                y = *(stackBase+evmInstance->regs.sp-1);
                 if(((unsigned int)x+(unsigned int)y)&0xFF00 > 0)
                     setOverflowFlag(evmInstance);
                 *(stackBase+evmInstance->regs.sp+1) = (x+y)&0xFF;
