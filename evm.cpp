@@ -39,95 +39,95 @@ int runEvmInstance(EVM *evmInstance){
                     evmInstance->status.error = 4;
                     return abortWithError(evmInstance);
                 }
-                x = *(stackBase+evmInstance->regs.sp);
-                y = *(stackBase+evmInstance->regs.sp-1);
+                y = *(stackBase+evmInstance->regs.sp);
+                x = *(stackBase+evmInstance->regs.sp-1);
                 if(((unsigned int)x+(unsigned int)y)&0xFF00 > 0)
                     setOverflowFlag(evmInstance);
-                *(stackBase+evmInstance->regs.sp+1) = (x+y)&0xFF;
+                *(stackBase+evmInstance->regs.sp-1) = (x+y)&0xFF;
                 evmInstance->regs.sp += 1;
                 break;
             case isub:
-                evmInstance->regs.sp -= 1;
+                evmInstance->regs.sp += 1;
                 if(checkStackOverflow(evmInstance) || checkStackUnderflow(evmInstance)){
                     evmInstance->status.error = 4;
                     return abortWithError(evmInstance);
                 }
-                x = *(stackBase+evmInstance->regs.sp);
-                y = *(stackBase+evmInstance->regs.sp+1);
+                y = *(stackBase+evmInstance->regs.sp);
+                x = *(stackBase+evmInstance->regs.sp-1);
                 if(((unsigned int)x-(unsigned int)y)&0xFF00 > 0)
                     setOverflowFlag(evmInstance);
-                *(stackBase+evmInstance->regs.sp+1) = (x-y)&0xFF;
+                *(stackBase+evmInstance->regs.sp-1) = (x-y)&0xFF;
                 evmInstance->regs.sp += 1;
                 break;
             case imul:
-                evmInstance->regs.sp -= 1;
+                evmInstance->regs.sp += 1;
                 if(checkStackOverflow(evmInstance) || checkStackUnderflow(evmInstance)){
                     evmInstance->status.error = 4;
                     return abortWithError(evmInstance);
                 }
-                x = *(stackBase+evmInstance->regs.sp);
-                y = *(stackBase+evmInstance->regs.sp+1);
+                y = *(stackBase+evmInstance->regs.sp);
+                x = *(stackBase+evmInstance->regs.sp-1);
                 if(((unsigned int)x*(unsigned int)y)&0xFF00 > 0)
                     setOverflowFlag(evmInstance);
-                *(stackBase+evmInstance->regs.sp+1) = (x*y)&0xFF;
+                *(stackBase+evmInstance->regs.sp-1) = (x*y)&0xFF;
                 evmInstance->regs.sp += 1;
                 break;
             case idiv:
-                evmInstance->regs.sp -= 1;
+                evmInstance->regs.sp += 1;
                 if(checkStackOverflow(evmInstance) || checkStackUnderflow(evmInstance)){
                     evmInstance->status.error = 4;
                     return abortWithError(evmInstance);
                 }
-                x = *(stackBase+evmInstance->regs.sp);
-                y = *(stackBase+evmInstance->regs.sp+1);
-                *(stackBase+evmInstance->regs.sp+1) = (x/y)&0xFF;
+                y = *(stackBase+evmInstance->regs.sp);
+                x = *(stackBase+evmInstance->regs.sp-1);
+                *(stackBase+evmInstance->regs.sp-1) = (x/y)&0xFF;
                 evmInstance->regs.sp += 1;
                 break;
             case icmp:
-                evmInstance->regs.sp -= 1;
+                evmInstance->regs.sp += 1;
                 if(checkStackOverflow(evmInstance) || checkStackUnderflow(evmInstance)){
                     evmInstance->status.error = 4;
                     return abortWithError(evmInstance);
                 }
-                x = *(stackBase+evmInstance->regs.sp);
-                y = *(stackBase+evmInstance->regs.sp+1);
+                y = *(stackBase+evmInstance->regs.sp);
+                x = *(stackBase+evmInstance->regs.sp-1);
                 if(x^y)
                     setZeroFlag(evmInstance);
-                evmInstance->regs.sp += 1;
+                evmInstance->regs.sp -= 1;
                 break;
 
             case iand:
-                evmInstance->regs.sp -= 1;
+                evmInstance->regs.sp += 1;
                 if(checkStackOverflow(evmInstance) || checkStackUnderflow(evmInstance)){
                     evmInstance->status.error = 4;
                     return abortWithError(evmInstance);
                 }
-                x = *(stackBase+evmInstance->regs.sp);
-                y = *(stackBase+evmInstance->regs.sp+1);
-                *(stackBase+evmInstance->regs.sp+1) = (x&y)&0xFF;
-                evmInstance->regs.sp += 1;
+                y = *(stackBase+evmInstance->regs.sp);
+                x = *(stackBase+evmInstance->regs.sp-1);
+                *(stackBase+evmInstance->regs.sp-1) = (x&y)&0xFF;
+                evmInstance->regs.sp -= 1;
                 break;
             case ior:
-                evmInstance->regs.sp -= 1;
+                evmInstance->regs.sp += 1;
                 if(checkStackOverflow(evmInstance) || checkStackUnderflow(evmInstance)){
                     evmInstance->status.error = 4;
                     return abortWithError(evmInstance);
                 }
-                x = *(stackBase+evmInstance->regs.sp);
-                y = *(stackBase+evmInstance->regs.sp+1);
-                *(stackBase+evmInstance->regs.sp+1) = (x||y)&0xFF;
-                evmInstance->regs.sp += 1;
+                y = *(stackBase+evmInstance->regs.sp);
+                x = *(stackBase+evmInstance->regs.sp-1);
+                *(stackBase+evmInstance->regs.sp-1) = (x||y)&0xFF;
+                evmInstance->regs.sp -= 1;
                 break;
             case ixor:
-                evmInstance->regs.sp -= 1;
+                evmInstance->regs.sp += 1;
                 if(checkStackOverflow(evmInstance) || checkStackUnderflow(evmInstance)){
                     evmInstance->status.error = 4;
                     return abortWithError(evmInstance);
                 }
-                x = *(stackBase+evmInstance->regs.sp);
-                y = *(stackBase+evmInstance->regs.sp+1);
-                *(stackBase+evmInstance->regs.sp+1) = (x^y)&0xFF;
-                evmInstance->regs.sp += 1;
+                y = *(stackBase+evmInstance->regs.sp);
+                x = *(stackBase+evmInstance->regs.sp-1);
+                *(stackBase+evmInstance->regs.sp-1) = (x^y)&0xFF;
+                evmInstance->regs.sp -= 1;
                 break;
             case inot:
                 if(checkStackOverflow(evmInstance) || checkStackUnderflow(evmInstance)){
@@ -138,31 +138,31 @@ int runEvmInstance(EVM *evmInstance){
                 *(stackBase+evmInstance->regs.sp) = (!x)&0xFF;
                 break;
             case ishl:
-                evmInstance->regs.sp -= 1;
+                evmInstance->regs.sp += 1;
                 if(checkStackOverflow(evmInstance) || checkStackUnderflow(evmInstance)){
                     evmInstance->status.error = 4;
                     return abortWithError(evmInstance);
                 }
-                x = *(stackBase+evmInstance->regs.sp);
-                y = *(stackBase+evmInstance->regs.sp+1);
-                *(stackBase+evmInstance->regs.sp) = (x<<y)&0xFF;
-                evmInstance->regs.sp += 1;
+                y = *(stackBase+evmInstance->regs.sp);
+                x = *(stackBase+evmInstance->regs.sp-1);
+                *(stackBase+evmInstance->regs.sp-1) = (x<<y)&0xFF;
+                evmInstance->regs.sp -= 1;
                 break;
             case ishr:
-                evmInstance->regs.sp -= 1;
+                evmInstance->regs.sp += 1;
                 if(checkStackOverflow(evmInstance) || checkStackUnderflow(evmInstance)){
                     evmInstance->status.error = 4;
                     return abortWithError(evmInstance);
                 }
-                x = *(stackBase+evmInstance->regs.sp);
-                y = *(stackBase+evmInstance->regs.sp+1);
-                *(stackBase+evmInstance->regs.sp) = (x>>y)&0xFF;
-                evmInstance->regs.sp += 1;
+                y = *(stackBase+evmInstance->regs.sp);
+                x = *(stackBase+evmInstance->regs.sp-1);
+                *(stackBase+evmInstance->regs.sp-1) = (x>>y)&0xFF;
+                evmInstance->regs.sp -= 1;
                 break;
             
             case push:
                 op1 = fetchNext(evmInstance, evmInstance->regs.ip);
-                evmInstance->regs.sp += 1;
+                evmInstance->regs.sp -= 1;
                 if(checkStackOverflow(evmInstance) || checkStackUnderflow(evmInstance)){
                     evmInstance->status.error = 4;
                     return abortWithError(evmInstance);
@@ -172,7 +172,7 @@ int runEvmInstance(EVM *evmInstance){
 
             case pusha:
                 op1 = evmInstance->regs.A;
-                evmInstance->regs.sp += 1;
+                evmInstance->regs.sp -= 1;
                 if(checkStackOverflow(evmInstance) || checkStackUnderflow(evmInstance)){
                     evmInstance->status.error = 4;
                     return abortWithError(evmInstance);
@@ -182,7 +182,7 @@ int runEvmInstance(EVM *evmInstance){
                 break;
             case pushb:
                 op1 = evmInstance->regs.B;
-                evmInstance->regs.sp += 1;
+                evmInstance->regs.sp -= 1;
                 if(checkStackOverflow(evmInstance) || checkStackUnderflow(evmInstance)){
                     evmInstance->status.error = 4;
                     return abortWithError(evmInstance);
@@ -192,7 +192,7 @@ int runEvmInstance(EVM *evmInstance){
                 break;
             case pushc:
                 op1 = evmInstance->regs.C;
-                evmInstance->regs.sp += 1;
+                evmInstance->regs.sp -= 1;
                 if(checkStackOverflow(evmInstance) || checkStackUnderflow(evmInstance)){
                     evmInstance->status.error = 4;
                     return abortWithError(evmInstance);
@@ -202,7 +202,7 @@ int runEvmInstance(EVM *evmInstance){
                 break;
             case pushd:
                 op1 = evmInstance->regs.D;
-                evmInstance->regs.sp += 1;
+                evmInstance->regs.sp -= 1;
                 if(checkStackOverflow(evmInstance) || checkStackUnderflow(evmInstance)){
                     evmInstance->status.error = 4;
                     return abortWithError(evmInstance);
