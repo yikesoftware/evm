@@ -7,18 +7,20 @@
 #ifndef EVM_H
 #define EVM_H
 
+#include "evm_syscall.h"
 #define BINARY_MAX_SIZE 255
 #define STACK_MIN_SIZE 32
 #define STACK_MAX_SIZE 255
 #define HEAP_MIN_SIZE 32
 #define HEAP_MAX_SIZE 255
 
-const char statusToText[5][128] = {
+const char statusToText[6][128] = {
     "[-] ERROR 00: EVM instance memory allocation failed!",
     "[-] ERROR 01: The binary file size exceeds the upper limit!",
     "[-] ERROR 02: Unable to read binary file!",
     "[-] ERROR 03: Unknown instruction: ",
-    "[-] ERROR 04: Stack smash detected!"
+    "[-] ERROR 04: Stack smash detected!",
+    "[-] ERROR 05: Illegal heap address!"
 };
 
 #define getErrorText(code) ({           \
@@ -137,6 +139,7 @@ class EVM{
         REGs regs;
         STATUS status;
         MEM mem;
+        vmSyscall_vtable evmSyscall;
         EVM(const char *binaryFileName,unsigned int stackSize, unsigned int heapSize){
             std::cout<<"[*] EVM instance initializing..."<<std::endl;
             memset(&this->regs,0,sizeof(REGs));

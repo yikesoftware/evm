@@ -168,6 +168,7 @@ int runEvmInstance(EVM *evmInstance){
                     return abortWithError(evmInstance);
                 }
                 *(stackBase+evmInstance->regs.sp) = op1;
+                nextIp(evmInstance);
                 break;
 
             case pusha:
@@ -177,7 +178,6 @@ int runEvmInstance(EVM *evmInstance){
                     evmInstance->status.error = 4;
                     return abortWithError(evmInstance);
                 }
-                nextIp(evmInstance);
                 *(stackBase+evmInstance->regs.sp) = op1;
                 break;
             case pushb:
@@ -187,7 +187,6 @@ int runEvmInstance(EVM *evmInstance){
                     evmInstance->status.error = 4;
                     return abortWithError(evmInstance);
                 }
-                nextIp(evmInstance);
                 *(stackBase+evmInstance->regs.sp) = op1;
                 break;
             case pushc:
@@ -197,7 +196,6 @@ int runEvmInstance(EVM *evmInstance){
                     evmInstance->status.error = 4;
                     return abortWithError(evmInstance);
                 }
-                nextIp(evmInstance);
                 *(stackBase+evmInstance->regs.sp) = op1;
                 break;
             case pushd:
@@ -207,8 +205,57 @@ int runEvmInstance(EVM *evmInstance){
                     evmInstance->status.error = 4;
                     return abortWithError(evmInstance);
                 }
-                nextIp(evmInstance);
                 *(stackBase+evmInstance->regs.sp) = op1;
+                break;
+
+            case pop:
+                op1 = fetchNext(evmInstance, evmInstance->regs.ip);
+                if(checkStackOverflow(evmInstance) || checkStackUnderflow(evmInstance)){
+                    evmInstance->status.error = 4;
+                    return abortWithError(evmInstance);
+                }
+                if(checkHeapOverflow(evmInstance, op1) || checkHeapUnderflow(evmInstance, op1)){
+                    evmInstance->status.error = 5;
+                    return abortWithError(evmInstance);
+                }
+                *(heapBase+op1) = *(stackBase + evmInstance->regs.sp);
+                evmInstance->regs.sp += 1;
+                break;
+
+            case popa:
+                if(checkStackOverflow(evmInstance) || checkStackUnderflow(evmInstance)){
+                    evmInstance->status.error = 4;
+                    return abortWithError(evmInstance);
+                }
+                evmInstance->regs.A = *(stackBase+evmInstance->regs.sp);
+                evmInstance->regs.sp += 1;
+                break;
+
+            case popb:
+                if(checkStackOverflow(evmInstance) || checkStackUnderflow(evmInstance)){
+                    evmInstance->status.error = 4;
+                    return abortWithError(evmInstance);
+                }
+                evmInstance->regs.B = *(stackBase+evmInstance->regs.sp);
+                evmInstance->regs.sp += 1;
+                break;
+
+            case popc:
+                if(checkStackOverflow(evmInstance) || checkStackUnderflow(evmInstance)){
+                    evmInstance->status.error = 4;
+                    return abortWithError(evmInstance);
+                }
+                evmInstance->regs.C = *(stackBase+evmInstance->regs.sp);
+                evmInstance->regs.sp += 1;
+                break;
+
+            case popd:
+                if(checkStackOverflow(evmInstance) || checkStackUnderflow(evmInstance)){
+                    evmInstance->status.error = 4;
+                    return abortWithError(evmInstance);
+                }
+                evmInstance->regs.D = *(stackBase+evmInstance->regs.sp);
+                evmInstance->regs.sp += 1;
                 break;
 
             case halt:
