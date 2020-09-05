@@ -177,6 +177,7 @@ int runEvmInstance(EVM *evmInstance){
                     evmInstance->status.error = 4;
                     return abortWithError(evmInstance);
                 }
+                nextIp(evmInstance);
                 *(stackBase+evmInstance->regs.sp) = op1;
                 break;
             case pushb:
@@ -186,6 +187,7 @@ int runEvmInstance(EVM *evmInstance){
                     evmInstance->status.error = 4;
                     return abortWithError(evmInstance);
                 }
+                nextIp(evmInstance);
                 *(stackBase+evmInstance->regs.sp) = op1;
                 break;
             case pushc:
@@ -195,6 +197,7 @@ int runEvmInstance(EVM *evmInstance){
                     evmInstance->status.error = 4;
                     return abortWithError(evmInstance);
                 }
+                nextIp(evmInstance);
                 *(stackBase+evmInstance->regs.sp) = op1;
                 break;
             case pushd:
@@ -204,6 +207,7 @@ int runEvmInstance(EVM *evmInstance){
                     evmInstance->status.error = 4;
                     return abortWithError(evmInstance);
                 }
+                nextIp(evmInstance);
                 *(stackBase+evmInstance->regs.sp) = op1;
                 break;
 
