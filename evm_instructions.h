@@ -19,7 +19,7 @@
 
 //栈操作
 #define push 0x40u//立即值
-#define pop 0x41u
+#define pop 0x41u //立即值
 #define pusha 0x42u//reg A
 #define pushb 0x43u//reg B
 #define pushc 0x44u//reg C

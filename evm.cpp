@@ -28,6 +28,7 @@ int runEvmInstance(EVM *evmInstance){
     uint8_t *stackBase = evmInstance->mem.stack;
     uint8_t *heapBase = evmInstance->mem.heap;
     uint8_t x,y;
+    uint8_t op1;
     do{
         nI = fetchNext(evmInstance,evmInstance->regs.ip);
         x^=x;y^=y;
@@ -44,7 +45,6 @@ int runEvmInstance(EVM *evmInstance){
                     setOverflowFlag(evmInstance);
                 *(stackBase+evmInstance->regs.sp+1) = (x+y)&0xFF;
                 evmInstance->regs.sp += 1;
-                nextIp(evmInstance);
                 break;
             case isub:
                 evmInstance->regs.sp -= 1;
@@ -58,7 +58,6 @@ int runEvmInstance(EVM *evmInstance){
                     setOverflowFlag(evmInstance);
                 *(stackBase+evmInstance->regs.sp+1) = (x-y)&0xFF;
                 evmInstance->regs.sp += 1;
-                nextIp(evmInstance);
                 break;
             case imul:
                 evmInstance->regs.sp -= 1;
@@ -72,7 +71,6 @@ int runEvmInstance(EVM *evmInstance){
                     setOverflowFlag(evmInstance);
                 *(stackBase+evmInstance->regs.sp+1) = (x*y)&0xFF;
                 evmInstance->regs.sp += 1;
-                nextIp(evmInstance);
                 break;
             case idiv:
                 evmInstance->regs.sp -= 1;
@@ -84,7 +82,6 @@ int runEvmInstance(EVM *evmInstance){
                 y = *(stackBase+evmInstance->regs.sp+1);
                 *(stackBase+evmInstance->regs.sp+1) = (x/y)&0xFF;
                 evmInstance->regs.sp += 1;
-                nextIp(evmInstance);
                 break;
             case icmp:
                 evmInstance->regs.sp -= 1;
@@ -97,7 +94,6 @@ int runEvmInstance(EVM *evmInstance){
                 if(x^y)
                     setZeroFlag(evmInstance);
                 evmInstance->regs.sp += 1;
-                nextIp(evmInstance);
                 break;
 
             case iand:
@@ -110,7 +106,6 @@ int runEvmInstance(EVM *evmInstance){
                 y = *(stackBase+evmInstance->regs.sp+1);
                 *(stackBase+evmInstance->regs.sp+1) = (x&y)&0xFF;
                 evmInstance->regs.sp += 1;
-                nextIp(evmInstance);
                 break;
             case ior:
                 evmInstance->regs.sp -= 1;
@@ -122,7 +117,6 @@ int runEvmInstance(EVM *evmInstance){
                 y = *(stackBase+evmInstance->regs.sp+1);
                 *(stackBase+evmInstance->regs.sp+1) = (x||y)&0xFF;
                 evmInstance->regs.sp += 1;
-                nextIp(evmInstance);
                 break;
             case ixor:
                 evmInstance->regs.sp -= 1;
@@ -134,7 +128,6 @@ int runEvmInstance(EVM *evmInstance){
                 y = *(stackBase+evmInstance->regs.sp+1);
                 *(stackBase+evmInstance->regs.sp+1) = (x^y)&0xFF;
                 evmInstance->regs.sp += 1;
-                nextIp(evmInstance);
                 break;
             case inot:
                 if(checkStackOverflow(evmInstance) || checkStackUnderflow(evmInstance)){
@@ -143,7 +136,6 @@ int runEvmInstance(EVM *evmInstance){
                 }
                 x = *(stackBase+evmInstance->regs.sp);
                 *(stackBase+evmInstance->regs.sp) = (!x)&0xFF;
-                nextIp(evmInstance);
                 break;
             case ishl:
                 evmInstance->regs.sp -= 1;
@@ -155,7 +147,6 @@ int runEvmInstance(EVM *evmInstance){
                 y = *(stackBase+evmInstance->regs.sp+1);
                 *(stackBase+evmInstance->regs.sp) = (x<<y)&0xFF;
                 evmInstance->regs.sp += 1;
-                nextIp(evmInstance);
                 break;
             case ishr:
                 evmInstance->regs.sp -= 1;
@@ -167,8 +158,55 @@ int runEvmInstance(EVM *evmInstance){
                 y = *(stackBase+evmInstance->regs.sp+1);
                 *(stackBase+evmInstance->regs.sp) = (x>>y)&0xFF;
                 evmInstance->regs.sp += 1;
-                nextIp(evmInstance);
                 break;
+            
+            case push:
+                op1 = fetchNext(evmInstance, evmInstance->regs.ip);
+                evmInstance->regs.sp += 1;
+                if(checkStackOverflow(evmInstance) || checkStackUnderflow(evmInstance)){
+                    evmInstance->status.error = 4;
+                    return abortWithError(evmInstance);
+                }
+                *(stackBase+evmInstance->regs.sp) = op1;
+                break;
+
+            case pusha:
+                op1 = evmInstance->regs.A;
+                evmInstance->regs.sp += 1;
+                if(checkStackOverflow(evmInstance) || checkStackUnderflow(evmInstance)){
+                    evmInstance->status.error = 4;
+                    return abortWithError(evmInstance);
+                }
+                *(stackBase+evmInstance->regs.sp) = op1;
+                break;
+            case pushb:
+                op1 = evmInstance->regs.B;
+                evmInstance->regs.sp += 1;
+                if(checkStackOverflow(evmInstance) || checkStackUnderflow(evmInstance)){
+                    evmInstance->status.error = 4;
+                    return abortWithError(evmInstance);
+                }
+                *(stackBase+evmInstance->regs.sp) = op1;
+                break;
+            case pushc:
+                op1 = evmInstance->regs.C;
+                evmInstance->regs.sp += 1;
+                if(checkStackOverflow(evmInstance) || checkStackUnderflow(evmInstance)){
+                    evmInstance->status.error = 4;
+                    return abortWithError(evmInstance);
+                }
+                *(stackBase+evmInstance->regs.sp) = op1;
+                break;
+            case pushd:
+                op1 = evmInstance->regs.D;
+                evmInstance->regs.sp += 1;
+                if(checkStackOverflow(evmInstance) || checkStackUnderflow(evmInstance)){
+                    evmInstance->status.error = 4;
+                    return abortWithError(evmInstance);
+                }
+                *(stackBase+evmInstance->regs.sp) = op1;
+                break;
+
             case halt:
                 evmInstance->status.running = 0;
                 std::cout<<"[*] Halt signal."<<std::endl;
