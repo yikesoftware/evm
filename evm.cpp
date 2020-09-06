@@ -223,7 +223,6 @@ int runEvmInstance(EVM *evmInstance){
                 *(heapBase+op1) = *(stackBase + evmInstance->regs.sp);
                 evmInstance->regs.sp += 1;
                 break;
-
             case popa:
                 if(checkStackOverflow(evmInstance) || checkStackUnderflow(evmInstance)){
                     evmInstance->status.error = 4;
@@ -232,7 +231,6 @@ int runEvmInstance(EVM *evmInstance){
                 evmInstance->regs.A = *(stackBase+evmInstance->regs.sp);
                 evmInstance->regs.sp += 1;
                 break;
-
             case popb:
                 if(checkStackOverflow(evmInstance) || checkStackUnderflow(evmInstance)){
                     evmInstance->status.error = 4;
@@ -241,7 +239,6 @@ int runEvmInstance(EVM *evmInstance){
                 evmInstance->regs.B = *(stackBase+evmInstance->regs.sp);
                 evmInstance->regs.sp += 1;
                 break;
-
             case popc:
                 if(checkStackOverflow(evmInstance) || checkStackUnderflow(evmInstance)){
                     evmInstance->status.error = 4;
@@ -250,7 +247,6 @@ int runEvmInstance(EVM *evmInstance){
                 evmInstance->regs.C = *(stackBase+evmInstance->regs.sp);
                 evmInstance->regs.sp += 1;
                 break;
-
             case popd:
                 if(checkStackOverflow(evmInstance) || checkStackUnderflow(evmInstance)){
                     evmInstance->status.error = 4;
@@ -258,6 +254,56 @@ int runEvmInstance(EVM *evmInstance){
                 }
                 evmInstance->regs.D = *(stackBase+evmInstance->regs.sp);
                 evmInstance->regs.sp += 1;
+                break;
+
+            case mova:
+                op1 = fetchNext(evmInstance, evmInstance->regs.ip);
+                evmInstance->regs.A = op1;
+                break;
+            case movb:
+                op1 = fetchNext(evmInstance, evmInstance->regs.ip);
+                evmInstance->regs.B = op1;
+                break;
+            case movc:
+                op1 = fetchNext(evmInstance, evmInstance->regs.ip);
+                evmInstance->regs.C = op1;
+                break;
+            case movd:
+                op1 = fetchNext(evmInstance, evmInstance->regs.ip);
+                evmInstance->regs.D = op1;
+                break;
+
+            case storea:
+                op1 = fetchNext(evmInstance, evmInstance->regs.ip);
+                if(checkHeapOverflow(evmInstance, op1) || checkHeapUnderflow(evmInstance, op1)){
+                    evmInstance->status.error = 5;
+                    return abortWithError(evmInstance);
+                }
+                *(heapBase+op1) = evmInstance->regs.A;
+                break;
+            case storeb:
+                op1 = fetchNext(evmInstance, evmInstance->regs.ip);
+                if(checkHeapOverflow(evmInstance, op1) || checkHeapUnderflow(evmInstance, op1)){
+                    evmInstance->status.error = 5;
+                    return abortWithError(evmInstance);
+                }
+                *(heapBase+op1) = evmInstance->regs.B;
+                break;
+            case storec:
+                op1 = fetchNext(evmInstance, evmInstance->regs.ip);
+                if(checkHeapOverflow(evmInstance, op1) || checkHeapUnderflow(evmInstance, op1)){
+                    evmInstance->status.error = 5;
+                    return abortWithError(evmInstance);
+                }
+                *(heapBase+op1) = evmInstance->regs.C;
+                break;
+            case stored:
+                op1 = fetchNext(evmInstance, evmInstance->regs.ip);
+                if(checkHeapOverflow(evmInstance, op1) || checkHeapUnderflow(evmInstance, op1)){
+                    evmInstance->status.error = 5;
+                    return abortWithError(evmInstance);
+                }
+                *(heapBase+op1) = evmInstance->regs.D;
                 break;
 
             case syscall:
