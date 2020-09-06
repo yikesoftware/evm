@@ -262,7 +262,7 @@ int runEvmInstance(EVM *evmInstance){
 
             case syscall:
                 evmInstance->status.running = 0;
-                std::cout<<"[*] Into syscall."<<std::endl;
+                std::cout<<"[*] interrupt."<<std::endl;
                 vmSyscall_int(evmInstance, (int)evmInstance->regs.A);
                 evmInstance->status.running = 1;
                 break;
