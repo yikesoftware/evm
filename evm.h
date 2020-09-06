@@ -80,9 +80,15 @@ binSize;                                            \
     instance->regs.eflag |= 0x4;                \
 })
 
-#define checkStackUnderflow(instance)({                             \
-    int result = (instance->regs.sp) < instance->mem.stackSize-1?0:1; \
-    result;                                                         \
+#define checkZeroFlag(instance)({               \
+    int result;                                 \
+    result = (instance->regs.eflag>>2)&0x1?1:0; \
+    result;                                     \
+})
+
+#define checkStackUnderflow(instance)({                                 \
+    int result = (instance->regs.sp) < instance->mem.stackSize-1?0:1;   \
+    result;                                                             \
 })
 
 #define checkStackOverflow(instance)({                  \

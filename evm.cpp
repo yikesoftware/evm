@@ -305,6 +305,55 @@ int runEvmInstance(EVM *evmInstance){
                 }
                 *(heapBase+op1) = evmInstance->regs.D;
                 break;
+            case geta:
+                op1 = fetchNext(evmInstance, evmInstance->regs.ip);
+                if(checkHeapOverflow(evmInstance, op1) || checkHeapUnderflow(evmInstance, op1)){
+                    evmInstance->status.error = 5;
+                    return abortWithError(evmInstance);
+                }
+                evmInstance->regs.A = *(heapBase+op1);
+                break;
+            case getb:
+                op1 = fetchNext(evmInstance, evmInstance->regs.ip);
+                if(checkHeapOverflow(evmInstance, op1) || checkHeapUnderflow(evmInstance, op1)){
+                    evmInstance->status.error = 5;
+                    return abortWithError(evmInstance);
+                }
+                evmInstance->regs.B = *(heapBase+op1);
+                break;
+            case getc:
+                op1 = fetchNext(evmInstance, evmInstance->regs.ip);
+                if(checkHeapOverflow(evmInstance, op1) || checkHeapUnderflow(evmInstance, op1)){
+                    evmInstance->status.error = 5;
+                    return abortWithError(evmInstance);
+                }
+                evmInstance->regs.C = *(heapBase+op1);
+                break;
+            case getd:
+                op1 = fetchNext(evmInstance, evmInstance->regs.ip);
+                if(checkHeapOverflow(evmInstance, op1) || checkHeapUnderflow(evmInstance, op1)){
+                    evmInstance->status.error = 5;
+                    return abortWithError(evmInstance);
+                }
+                evmInstance->regs.D = *(heapBase+op1);
+                break;
+
+            case jmp:
+                op1 = fetchNext(evmInstance, evmInstance->regs.ip);
+                evmInstance->regs.ip = op1;
+                break;
+            case jz:
+                if(checkZeroFlag(evmInstance)){
+                    op1 = fetchNext(evmInstance, evmInstance->regs.ip);
+                    evmInstance->regs.ip = op1;
+                }
+                break;
+            case jnz:
+                if(!checkZeroFlag(evmInstance)){
+                    op1 = fetchNext(evmInstance, evmInstance->regs.ip);
+                    evmInstance->regs.ip = op1;
+                }
+                break;
 
             case syscall:
                 evmInstance->status.running = 0;
