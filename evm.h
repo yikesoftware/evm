@@ -1,13 +1,12 @@
 #include<cstdio>
 #include<unistd.h>
 #include<stdint.h>
-
-
+#include<cstdlib>
+#include<iostream>
 
 #ifndef EVM_H
 #define EVM_H
 
-#include "evm_syscall.h"
 #define BINARY_MAX_SIZE 255
 #define STACK_MIN_SIZE 32
 #define STACK_MAX_SIZE 255
@@ -112,6 +111,18 @@ binSize;                                            \
     nextInstruction;                                                    \
 })
 
+//vmSyscall functions define
+typedef uint8_t (*vmSyscall_vptr)(void *);
+uint8_t vmSyscall_stdin_read(void *instance);
+uint8_t vmSyscall_stdout_write(void *instance);
+uint8_t vmSyscall_int(void *instance, int scn);
+void vmSyscall_vtable_solve(void *instance);
+
+struct vmSyscall_vtable{
+    unsigned ifsolve = 0;
+    vmSyscall_vptr *ptrArray;
+};
+
 struct REGs{
     uint8_t eflag; //[0,0,0,0,0,(zero flag),(溢出),(进位)]
     uint8_t A, B, C, D;
@@ -139,7 +150,7 @@ class EVM{
         REGs regs;
         STATUS status;
         MEM mem;
-        vmSyscall_vtable evmSyscall;
+        vmSyscall_vtable syscalls;
         EVM(const char *binaryFileName,unsigned int stackSize, unsigned int heapSize){
             std::cout<<"[*] EVM instance initializing..."<<std::endl;
             memset(&this->regs,0,sizeof(REGs));
@@ -173,5 +184,7 @@ class EVM{
 
 int evmLoadBinaryFile(const char *binaryFileName,unsigned int stackSize,unsigned int heapSize);
 int runEvmInstance(EVM *evmInstance);
+
+
 
 #endif

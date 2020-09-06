@@ -51,7 +51,7 @@
 #define jnz 0x72u
 
 //“系统调用”
-#define vmcall 0x80u//接调用表偏移
+#define syscall 0x80u//接调用表偏移
 
 //结束
 #define halt 0x90u

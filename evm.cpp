@@ -1,4 +1,5 @@
 #include<iostream>
+#include<cstdio>
 #include "evm.h"
 #include "evm_instructions.h"
 int evmLoadBinaryFile(const char *binaryFileName,unsigned int stackSize,unsigned int heapSize){
@@ -31,6 +32,7 @@ int runEvmInstance(EVM *evmInstance){
     uint8_t op1;
     do{
         nI = fetchNext(evmInstance,evmInstance->regs.ip);
+        //printf("curr nI: %d\n",nI);
         x^=x;y^=y;
         switch(nI){
             case iadd:
@@ -168,7 +170,7 @@ int runEvmInstance(EVM *evmInstance){
                     return abortWithError(evmInstance);
                 }
                 *(stackBase+evmInstance->regs.sp) = op1;
-                nextIp(evmInstance);
+                //nextIp(evmInstance);
                 break;
 
             case pusha:
@@ -256,6 +258,13 @@ int runEvmInstance(EVM *evmInstance){
                 }
                 evmInstance->regs.D = *(stackBase+evmInstance->regs.sp);
                 evmInstance->regs.sp += 1;
+                break;
+
+            case syscall:
+                evmInstance->status.running = 0;
+                std::cout<<"[*] Into syscall."<<std::endl;
+                vmSyscall_int(evmInstance, (int)evmInstance->regs.A);
+                evmInstance->status.running = 1;
                 break;
 
             case halt:
