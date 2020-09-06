@@ -8,6 +8,8 @@
 #define imul 0x22u
 #define idiv 0x23u
 #define icmp 0x24u
+#define iinc 0x25u
+#define idec 0x26u
 
 //位运算指令
 #define iand 0x30u

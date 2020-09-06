@@ -72,12 +72,30 @@ binSize;                                            \
     instance->regs.eflag |= 0x1;                \
 })
 
+#define clrCarryFlag(instance)({                \
+    instance->regs.eflag &= 0xfe;                \
+})
+
+#define checkCarryFlag(instance)({              \
+    int result;                                 \
+    result = (instance->regs.eflag>>0)&0x1?1:0; \
+    result;                                     \
+})
+
 #define setOverflowFlag(instance)({             \
     instance->regs.eflag |= 0x2;                \
 })
 
+#define clrOverflowFlag(instance)({             \
+    instance->regs.eflag &= 0xfd;               \
+})
+
 #define setZeroFlag(instance)({                 \
     instance->regs.eflag |= 0x4;                \
+})
+
+#define clrZeroFlag(instance)({                 \
+    instance->regs.eflag &= 0xfb;               \
 })
 
 #define checkZeroFlag(instance)({               \
@@ -130,7 +148,7 @@ struct vmSyscall_vtable{
 };
 
 struct REGs{
-    uint8_t eflag; //[0,0,0,0,0,(zero flag),(溢出),(进位)]
+    uint8_t eflag; //[0,0,0,0,(CF),(zero flag),(溢出),(CF进位)]
     uint8_t A, B, C, D;
     unsigned int sp;
     unsigned int ip;

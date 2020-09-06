@@ -32,7 +32,7 @@ int runEvmInstance(EVM *evmInstance){
     uint8_t op1;
     do{
         nI = fetchNext(evmInstance,evmInstance->regs.ip);
-        //printf("curr nI: %d\n",nI);
+        //printf("curr nI: %#x\n",nI);
         x^=x;y^=y;
         switch(nI){
             case iadd:
@@ -93,9 +93,42 @@ int runEvmInstance(EVM *evmInstance){
                 }
                 y = *(stackBase+evmInstance->regs.sp);
                 x = *(stackBase+evmInstance->regs.sp-1);
-                if(x^y)
+                if(x>y){
+                    //std::cout<<"[*] SET_CF CLR_ZF"<<std::endl;
+                    setCarryFlag(evmInstance);
+                    clrZeroFlag(evmInstance);
+                }
+                if(x<y){
+                    //std::cout<<"[*] CLR_CF CLR_ZF"<<std::endl;
+                    clrCarryFlag(evmInstance);
+                    clrZeroFlag(evmInstance);
+                }
+                if(x==y){
+                    //std::cout<<"[*] CLR_CF SET_ZF"<<std::endl;
+                    clrCarryFlag(evmInstance);
                     setZeroFlag(evmInstance);
+                }
                 evmInstance->regs.sp -= 1;
+                break;
+            case iinc:
+                if(checkStackOverflow(evmInstance) || checkStackUnderflow(evmInstance)){
+                    evmInstance->status.error = 4;
+                    return abortWithError(evmInstance);
+                }
+                x = *(stackBase+evmInstance->regs.sp);
+                if(((unsigned int)x+1)&0xFF00 > 0)
+                    setOverflowFlag(evmInstance);
+                *(stackBase+evmInstance->regs.sp) = x+1;
+                break;
+            case idec:
+                if(checkStackOverflow(evmInstance) || checkStackUnderflow(evmInstance)){
+                    evmInstance->status.error = 4;
+                    return abortWithError(evmInstance);
+                }
+                x = *(stackBase+evmInstance->regs.sp);
+                if(((unsigned int)x-1)&0xFF00 > 0)
+                    setOverflowFlag(evmInstance);
+                *(stackBase+evmInstance->regs.sp) = x-1;
                 break;
 
             case iand:
@@ -346,12 +379,16 @@ int runEvmInstance(EVM *evmInstance){
                 if(checkZeroFlag(evmInstance)){
                     op1 = fetchNext(evmInstance, evmInstance->regs.ip);
                     evmInstance->regs.ip = op1;
+                }else{
+                    nextIp(evmInstance);
                 }
                 break;
             case jnz:
                 if(!checkZeroFlag(evmInstance)){
                     op1 = fetchNext(evmInstance, evmInstance->regs.ip);
                     evmInstance->regs.ip = op1;
+                }else{
+                    nextIp(evmInstance);
                 }
                 break;
 
