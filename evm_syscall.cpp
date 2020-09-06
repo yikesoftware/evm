@@ -5,8 +5,13 @@
 
 uint8_t vmSyscall_stdin_read(void *instance){
     uint8_t ret2reg;
-    void *readToAddr = ((EVM *)instance)->mem.heap+((EVM *)instance)->regs.B;
-    unsigned length = ((EVM *)instance)->regs.C;
+    unsigned int offset = ((EVM *)instance)->regs.B;
+    void *readToAddr = ((EVM *)instance)->mem.heap+offset;
+    unsigned int length = ((EVM *)instance)->regs.C;
+    if(checkHeapOverflow((EVM *)instance,offset+length) || 
+        checkHeapUnderflow((EVM *)instance,offset+length)){
+        return -1;
+    }
     ((EVM *)instance)->status.io = 1;
     ret2reg = read(0,readToAddr,length);
     ((EVM *)instance)->status.io = 0;
@@ -15,8 +20,13 @@ uint8_t vmSyscall_stdin_read(void *instance){
 
 uint8_t vmSyscall_stdout_write(void *instance){
     uint8_t ret2reg;
-    void *writeToAddr = ((EVM *)instance)->mem.heap+((EVM *)instance)->regs.B;
-    unsigned length = ((EVM *)instance)->regs.C;
+    unsigned int offset = ((EVM *)instance)->regs.B;
+    void *writeToAddr = ((EVM *)instance)->mem.heap+offset;
+    unsigned int length = ((EVM *)instance)->regs.C;
+    if(checkHeapOverflow((EVM *)instance,offset+length) || 
+        checkHeapUnderflow((EVM *)instance,offset+length)){
+        return -1;
+    }
     ((EVM *)instance)->status.io = 1;
     ret2reg = write(1,writeToAddr,length);
     ((EVM *)instance)->status.io = 0;

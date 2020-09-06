@@ -105,17 +105,17 @@ binSize;                                            \
 })
 
 #define checkStackUnderflow(instance)({                                 \
-    int result = (instance->regs.sp) < instance->mem.stackSize-1?0:1;   \
+    int result = (instance->regs.sp) < (instance)->mem.stackSize-1?0:1;   \
     result;                                                             \
 })
 
 #define checkStackOverflow(instance)({                  \
-    int result = (instance->regs.sp)<0?1:0;             \
+    int result = ((instance)->regs.sp)<0?1:0;             \
     result;                                             \
 })
 
 #define checkHeapOverflow(instance, offset)({                       \
-    int result = (offset) < instance->mem.heapSize-1?0:1;             \
+    int result = (offset) < (instance)->mem.heapSize-1?0:1;             \
     result;                                                         \
 })
 

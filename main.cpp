@@ -17,6 +17,7 @@ void info(){
 
 int main(int argc, char *argv[]){
     const char *binaryFileName = argv[1];
+    if(argc<4) exit(0);
     std::cout<<"[*] Try to instantiate a new EVM instance from: "<<binaryFileName<<std::endl;
     unsigned int initStackSize = atoi(argv[2]);
     unsigned int initHeapSize = atoi(argv[3]);
